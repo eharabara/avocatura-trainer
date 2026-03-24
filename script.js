@@ -4,6 +4,7 @@ const STORAGE_KEYS = {
 
 const TEST_SIZE = 400;
 const PASSING_SCORE = 350;
+const ALLOWED_TEST_SIZES = [20, 50, 400];
 
 function cloneQuestionBank() {
   return JSON.parse(JSON.stringify(QUESTION_BANK));
@@ -22,16 +23,46 @@ function shuffleArray(items) {
   return copy;
 }
 
+function buildPrioritizedQuestionIds(questions, desiredSize) {
+  const scorableQuestions = questions.filter(hasScorableAnswer);
+  const unseenQuestionIds = shuffleArray(
+    scorableQuestions
+      .filter((question) => (question.times_seen || 0) === 0)
+      .map((question) => question.question_id)
+  );
+
+  if (unseenQuestionIds.length >= desiredSize) {
+    return unseenQuestionIds.slice(0, desiredSize);
+  }
+
+  const seenQuestionIds = shuffleArray(
+    scorableQuestions
+      .filter((question) => (question.times_seen || 0) > 0)
+      .map((question) => question.question_id)
+  );
+
+  return [...unseenQuestionIds, ...seenQuestionIds].slice(0, desiredSize);
+}
+
+function calculatePassingScore(testSize) {
+  if (testSize >= TEST_SIZE) {
+    return PASSING_SCORE;
+  }
+  return Math.ceil(testSize * 0.875);
+}
+
 function createQuizSession(questions, options = {}) {
   const mode = options.mode || "full";
   const requestedQuestionIds = Array.isArray(options.questionIds) ? options.questionIds : null;
   const scorableIds = questions.filter(hasScorableAnswer).map((question) => question.question_id);
+  const requestedSize = Number(options.size);
+  const desiredSize = ALLOWED_TEST_SIZES.includes(requestedSize) ? requestedSize : TEST_SIZE;
   const sessionQuestionIds = requestedQuestionIds && requestedQuestionIds.length
     ? requestedQuestionIds.filter((questionId) => scorableIds.includes(questionId))
-    : shuffleArray(scorableIds).slice(0, Math.min(TEST_SIZE, scorableIds.length));
+    : buildPrioritizedQuestionIds(questions, Math.min(desiredSize, scorableIds.length));
   const passingScore = mode === "retry"
     ? sessionQuestionIds.length
-    : Math.min(PASSING_SCORE, sessionQuestionIds.length);
+    : Math.min(calculatePassingScore(sessionQuestionIds.length), sessionQuestionIds.length);
 
   return {
     currentIndex: 0,
@@ -93,7 +124,7 @@ function mergeWithDefaults(savedState) {
     defaultState.quiz.mode = defaultState.quiz.mode || "full";
     defaultState.quiz.passingScore = defaultState.quiz.mode === "retry"
       ? defaultState.quiz.questionIds.length
-      : Math.min(PASSING_SCORE, defaultState.quiz.questionIds.length);
+      : Math.min(calculatePassingScore(defaultState.quiz.questionIds.length), defaultState.quiz.questionIds.length);
   }
 
   return defaultState;
@@ -119,6 +150,11 @@ function loadState() {
 
 function resetQuizSession(state) {
   state.quiz = createQuizSession(state.questions);
+  saveState(state);
+}
+
+function resetQuizSessionWithSize(state, size) {
+  state.quiz = createQuizSession(state.questions, { size });
   saveState(state);
 }
 
@@ -233,21 +269,51 @@ function renderDashboard(state) {
   const progress = Math.round((questions.filter((question) => question.times_seen > 0).length / questions.length) * 100);
   const reviewQuestions = getReviewQuestions(questions);
   const weakSubjects = getWeakSubjects(questions);
+  const markedCount = questions.filter((question) => question.marked_for_review).length;
+  const lowConfidenceCount = questions.filter((question) => question.confidence_level === "low").length;
+  const sessionSize = state.quiz.questionIds.length || TEST_SIZE;
 
   document.getElementById("seen-count").textContent = totalSeen;
   document.getElementById("correct-count").textContent = totalCorrect;
   document.getElementById("accuracy-count").textContent = `${accuracy}%`;
   document.getElementById("progress-badge").textContent = `${progress}%`;
-  document.getElementById("marked-count").textContent = questions.filter((question) => question.marked_for_review).length;
-  document.getElementById("low-confidence-count").textContent = questions.filter((question) => question.confidence_level === "low").length;
+  document.getElementById("marked-count").textContent = markedCount;
+  document.getElementById("low-confidence-count").textContent = lowConfidenceCount;
   document.getElementById("wrong-session-count").textContent = state.quiz.wrongQuestionIds.length;
+  document.getElementById("session-size-count").textContent = sessionSize;
+
+  const focusTitle = document.getElementById("focus-title");
+  const focusText = document.getElementById("focus-text");
+  const focusProgressBar = document.getElementById("focus-progress-bar");
+  const focusProgressText = document.getElementById("focus-progress-text");
+  const reviewSummaryText = document.getElementById("review-summary-text");
+
+  if (state.quiz.wrongQuestionIds.length > 0) {
+    focusTitle.textContent = "Ai intrebari gresite pregatite pentru reluare";
+    focusText.textContent = `Ai ${state.quiz.wrongQuestionIds.length} intrebari din ultima sesiune care merita refacute imediat.`;
+  } else if (progress === 0) {
+    focusTitle.textContent = "Incepe cu primul test complet";
+    focusText.textContent = `Poti lucra in sesiuni de 20, 50 sau 400 de intrebari. Pentru sesiunea actuala, pragul este ${state.quiz.passingScore}.`;
+  } else {
+    focusTitle.textContent = "Continua ritmul de pregatire";
+    focusText.textContent = `Ai parcurs deja ${progress}% din banca si ai o precizie generala de ${accuracy}%.`;
+  }
+
+  focusProgressBar.style.width = `${Math.max(progress, 4)}%`;
+  focusProgressText.textContent = `${progress}% din banca parcursa`;
+
+  if (markedCount + lowConfidenceCount + state.quiz.wrongQuestionIds.length === 0) {
+    reviewSummaryText.textContent = "Nu exista alerte importante acum. Poti continua linistit cu un test nou.";
+  } else {
+    reviewSummaryText.textContent = `${markedCount} marcate manual, ${lowConfidenceCount} cu confidence low si ${state.quiz.wrongQuestionIds.length} gresite in ultima sesiune.`;
+  }
 
   const weakSubjectsContainer = document.getElementById("weak-subjects");
   if (!weakSubjects.length) {
     weakSubjectsContainer.innerHTML = createListItemHTML({
-      title: "Nicio materie identificata",
+      title: "Inca nu exista un pattern clar",
       subtitle: "Date insuficiente",
-      details: "Pe masura ce raspunzi, aici vor aparea materiile cu precizie mai scazuta."
+      details: "Dupa primele teste, aici vei vedea materiile unde rata de raspuns scade si unde merita sa insisti."
     });
     return;
   }
@@ -274,7 +340,7 @@ function renderQuiz(state) {
   const currentIndex = Math.min(state.quiz.currentIndex, Math.max(0, totalQuestions - 1));
   const question = sessionQuestions[currentIndex];
   const quizProgress = document.getElementById("quiz-progress");
-  const noteField = document.getElementById("question-note");
+  const quizProgressBar = document.getElementById("quiz-progress-bar");
   const feedbackPanel = document.getElementById("feedback-panel");
 
   if (!question) {
@@ -282,27 +348,57 @@ function renderQuiz(state) {
     return;
   }
 
-  document.getElementById("question-subject").textContent = question.subject;
-  document.getElementById("question-source").textContent = `Q${question.source_question_number} - ${question.source_document}`;
   document.getElementById("question-text").textContent = question.question_text;
   document.getElementById("question-details").textContent = [question.subtopic, question.source_section].filter(Boolean).join(" - ");
   document.getElementById("option-a").textContent = question.option_a;
   document.getElementById("option-b").textContent = question.option_b;
   document.getElementById("option-c").textContent = question.option_c;
-  quizProgress.textContent = `${currentIndex + 1} / ${totalQuestions}`;
-  noteField.value = question.notes || "";
+  if (quizProgress) {
+    quizProgress.textContent = `${currentIndex + 1} / ${totalQuestions}`;
+  }
+  if (quizProgressBar) {
+    const progressPercent = totalQuestions === 0 ? 0 : Math.round(((currentIndex + 1) / totalQuestions) * 100);
+    quizProgressBar.style.width = `${Math.max(progressPercent, 4)}%`;
+  }
   feedbackPanel.className = "feedback-panel hidden";
   feedbackPanel.innerHTML = "";
 
   const savedAnswer = state.quiz.answers[question.question_id];
-  document.querySelectorAll('input[name="answer"]').forEach((input) => {
-    input.checked = savedAnswer?.selectedOption === input.value;
+  document.querySelectorAll(".option-card").forEach((card) => {
+    card.classList.remove("option-correct", "option-wrong", "option-right-answer");
   });
 
-  document.getElementById("submit-answer").disabled = false;
-  document.getElementById("submit-answer").onclick = () => handleAnswerSubmission(state, question);
+  document.querySelectorAll('input[name="answer"]').forEach((input) => {
+    input.checked = savedAnswer?.selectedOption === input.value;
+    input.disabled = Boolean(savedAnswer);
+    input.onchange = null;
+
+    const optionCard = input.closest(".option-card");
+    if (optionCard) {
+      optionCard.onclick = () => {
+        if (state.quiz.answers[question.question_id]) {
+          return;
+        }
+
+        input.checked = true;
+        handleAnswerSubmission(state, question);
+      };
+    }
+  });
+
+  if (savedAnswer?.isScorable) {
+    const selectedCard = document.querySelector(`input[name="answer"][value="${savedAnswer.selectedOption}"]`)?.closest(".option-card");
+    const correctCard = document.querySelector(`input[name="answer"][value="${question.correct_option_source}"]`)?.closest(".option-card");
+
+    if (savedAnswer.isCorrect) {
+      selectedCard?.classList.add("option-correct");
+    } else {
+      selectedCard?.classList.add("option-wrong");
+      correctCard?.classList.add("option-right-answer");
+    }
+  }
+
   document.getElementById("mark-review").onclick = () => toggleReviewFlag(state, question.question_id);
-  document.getElementById("save-note").onclick = () => saveQuestionNote(state, question.question_id, noteField.value);
 }
 
 function handleAnswerSubmission(state, question) {
@@ -320,7 +416,8 @@ function handleAnswerSubmission(state, question) {
   const isCorrect = isScorable ? selectedOption === question.correct_option_source : null;
   const alreadyAnswered = Boolean(state.quiz.answers[question.question_id]);
   const questionRef = state.questions.find((item) => item.question_id === question.question_id);
-  const submitButton = document.getElementById("submit-answer");
+  const selectedCard = selectedInput.closest(".option-card");
+  const correctCard = document.querySelector(`input[name="answer"][value="${question.correct_option_source}"]`)?.closest(".option-card");
 
   state.quiz.answers[question.question_id] = {
     selectedOption,
@@ -349,6 +446,9 @@ function handleAnswerSubmission(state, question) {
   questionRef.mastery_score = calculateMastery(questionRef);
   state.quiz.score = Object.values(state.quiz.answers).filter((answer) => answer.isCorrect === true).length;
   saveState(state);
+  document.querySelectorAll('input[name="answer"]').forEach((input) => {
+    input.disabled = true;
+  });
 
   if (!isScorable) {
     feedbackPanel.className = "feedback-panel";
@@ -356,19 +456,23 @@ function handleAnswerSubmission(state, question) {
       <strong>Raspuns salvat, dar intrebarea nu poate fi punctata automat.</strong>
       <p>${question.explanation}</p>
       <p><strong>Sursa:</strong> ${question.legal_basis}</p>
+      <button id="confirm-next" class="action-button primary feedback-action" type="button">Am inteles, continua</button>
     `;
-    window.setTimeout(() => goToNextQuestion(state), 900);
+    document.getElementById("confirm-next").onclick = () => goToNextQuestion(state);
   } else {
     feedbackPanel.className = `feedback-panel ${isCorrect ? "correct" : "wrong"}`;
     if (isCorrect) {
+      selectedCard?.classList.add("option-correct");
       feedbackPanel.innerHTML = `
         <strong>Raspuns corect.</strong>
         <p>${question.explanation}</p>
         <p><strong>Sursa:</strong> ${question.legal_basis}</p>
+        <button id="confirm-next" class="action-button primary feedback-action" type="button">Continua</button>
       `;
-      window.setTimeout(() => goToNextQuestion(state), 900);
+      document.getElementById("confirm-next").onclick = () => goToNextQuestion(state);
     } else {
-      submitButton.disabled = true;
+      selectedCard?.classList.add("option-wrong");
+      correctCard?.classList.add("option-right-answer");
       feedbackPanel.innerHTML = `
         <strong>Raspuns gresit.</strong>
         <p><strong>Raspunsul corect este ${question.correct_option_source}.</strong> ${getOptionText(question, question.correct_option_source)}</p>
@@ -396,20 +500,6 @@ function toggleReviewFlag(state, questionId) {
     <strong>${question.marked_for_review ? "Intrebarea a fost marcata pentru review." : "Marcarea pentru review a fost eliminata."}</strong>
     <p>Poti reveni la ea din pagina de review.</p>
   `;
-}
-
-function saveQuestionNote(state, questionId, noteValue) {
-  const question = state.questions.find((item) => item.question_id === questionId);
-  if (!question) {
-    return;
-  }
-
-  question.notes = noteValue.trim();
-  saveState(state);
-
-  const feedbackPanel = document.getElementById("feedback-panel");
-  feedbackPanel.className = "feedback-panel";
-  feedbackPanel.innerHTML = "<strong>Nota a fost salvata.</strong><p>Observatiile tale raman stocate local in browser.</p>";
 }
 
 function renderReview(state) {
@@ -504,7 +594,7 @@ function init() {
   const params = new URLSearchParams(window.location.search);
 
   if (currentPage === "quiz" && params.get("reset") === "1") {
-    resetQuizSession(state);
+    resetQuizSessionWithSize(state, Number(params.get("size")) || TEST_SIZE);
   }
 
   if (currentPage === "quiz" && params.get("retry") === "1") {

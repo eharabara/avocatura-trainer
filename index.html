@@ -14,42 +14,81 @@
 </head>
 <body data-page="dashboard">
   <div class="app-shell">
-    <header class="hero-card">
+    <header class="hero-card dashboard-hero">
       <div class="hero-copy">
         <p class="eyebrow">Antrenament Examen 2026</p>
-        <h1>Avocatura Trainer</h1>
-        <p class="hero-text">Exerseaza local, urmareste progresul si revizuieste intrebarile care mai au nevoie de atentie.</p>
+        <h1>Pregatirea ta, fara zgomot</h1>
+        <p class="hero-text">Tot ce ai nevoie ca sa continui logic: incepi un test nou, revii pe greseli si vezi rapid unde pierzi puncte.</p>
+        <div class="hero-actions">
+          <a class="action-button primary hero-primary" href="quiz.html?reset=1">Incepe test nou</a>
+          <a class="action-button hero-secondary" href="results.html">Vezi ultima sesiune</a>
+        </div>
       </div>
-      <div class="hero-badge">
-        <span>Offline Ready</span>
+
+      <div class="hero-side">
+        <div class="focus-card">
+          <span class="focus-label">Acum</span>
+          <strong id="focus-title">Esti gata pentru urmatorul test</strong>
+          <p id="focus-text">Runda standard are 400 de intrebari. Promovarea incepe de la 350 raspunsuri corecte.</p>
+          <div class="focus-progress">
+            <div id="focus-progress-bar" class="focus-progress-bar"></div>
+          </div>
+          <span id="focus-progress-text" class="focus-meta">0% din banca parcursa</span>
+        </div>
       </div>
     </header>
 
-    <div class="install-strip">
-      <button id="install-app" class="action-button install-button" type="button" hidden>Instaleaza aplicatia</button>
-      <p class="install-text">Pentru instalare ca PWA, deschide aplicatia printr-un link web sau `localhost`, nu direct din fisier.</p>
-    </div>
+    <section class="install-strip install-guide" aria-label="Ghid instalare">
+      <div class="install-copy">
+        <p class="eyebrow">Instalare pe telefon</p>
+        <h2>Adauga aplicatia pe ecranul principal</h2>
+        <p class="install-text">Instalarea functioneaza dupa ce deschizi aplicatia din linkul public, nu direct din fisier.</p>
+      </div>
+      <div class="install-guide-grid">
+        <article class="install-step-card">
+          <span class="install-step-label">Android</span>
+          <p>Deschide aplicatia in Chrome, apoi intra in meniul browserului si alege <strong>Install app</strong> sau <strong>Add to Home screen</strong>.</p>
+        </article>
+        <article class="install-step-card">
+          <span class="install-step-label">iPhone</span>
+          <p>Deschide aplicatia in Safari, apasa <strong>Share</strong>, apoi alege <strong>Add to Home Screen</strong>.</p>
+        </article>
+      </div>
+    </section>
 
-    <main class="grid">
-      <section class="card nav-card">
-        <div class="section-head">
-          <h2>Navigare rapida</h2>
+    <main class="dashboard-layout">
+      <section class="card dashboard-primary">
+        <div class="section-head dashboard-head">
+          <div>
+            <h2>Panou de studiu</h2>
+            <p class="section-copy">Porneste unde conteaza, fara sa cauti prin pagini.</p>
+          </div>
+          <span id="progress-badge" class="pill">0%</span>
         </div>
-        <div class="action-grid">
-          <a class="action-button primary" href="quiz.html?reset=1">Incepe quiz</a>
-          <a class="action-button" href="review.html">Vezi review</a>
+        <div class="dashboard-action-grid">
+          <a class="action-button primary" href="quiz.html?reset=1">Test random 400</a>
+          <a class="action-button" href="quiz.html?reset=1&size=50">Test rapid 50</a>
+          <a class="action-button" href="quiz.html?reset=1&size=20">Test scurt 20</a>
+          <a class="action-button" href="quiz.html?retry=1">Reia intrebarile gresite</a>
+          <a class="action-button" href="review.html">Review prioritar</a>
           <a class="action-button" href="results.html">Rezultate</a>
         </div>
       </section>
 
-      <section class="card">
-        <div class="section-head">
-          <h2>Progres general</h2>
-          <span id="progress-badge" class="pill">0%</span>
+      <section class="card dashboard-metrics">
+        <div class="section-head dashboard-head">
+          <div>
+            <h2>Unde esti acum</h2>
+            <p class="section-copy">Patru repere utile, fara statistici inutile.</p>
+          </div>
         </div>
-        <div class="stat-grid">
+        <div class="stat-grid compact-stats">
           <article class="stat-card">
-            <span class="stat-label">Intrebari vazute</span>
+            <span class="stat-label">Precizie totala</span>
+            <strong id="accuracy-count">0%</strong>
+          </article>
+          <article class="stat-card">
+            <span class="stat-label">Intrebari lucrate</span>
             <strong id="seen-count">0</strong>
           </article>
           <article class="stat-card">
@@ -57,38 +96,45 @@
             <strong id="correct-count">0</strong>
           </article>
           <article class="stat-card">
-            <span class="stat-label">Rata succes</span>
-            <strong id="accuracy-count">0%</strong>
-          </article>
-        </div>
-      </section>
-
-      <section class="card">
-        <div class="section-head">
-          <h2>Materii slabe</h2>
-          <span class="pill muted">Auto-analiza</span>
-        </div>
-        <div id="weak-subjects" class="list-stack"></div>
-      </section>
-
-      <section class="card">
-        <div class="section-head">
-          <h2>Revizie recomandata</h2>
-        </div>
-        <div class="stat-grid">
-          <article class="stat-card">
-            <span class="stat-label">Marcate manual</span>
-            <strong id="marked-count">0</strong>
-          </article>
-          <article class="stat-card">
-            <span class="stat-label">Confidence low</span>
-            <strong id="low-confidence-count">0</strong>
-          </article>
-          <article class="stat-card">
-            <span class="stat-label">Gresite ultima sesiune</span>
+            <span class="stat-label">Greseli in ultima sesiune</span>
             <strong id="wrong-session-count">0</strong>
           </article>
         </div>
+      </section>
+
+      <section class="card dashboard-review">
+        <div class="section-head dashboard-head">
+          <div>
+            <h2>Ce merita revazut</h2>
+            <p class="section-copy">Semnale rapide ca sa stii pe ce sa revii prima data.</p>
+          </div>
+        </div>
+        <div class="review-summary-grid">
+          <article class="mini-stat">
+            <span class="stat-label">Marcate manual</span>
+            <strong id="marked-count">0</strong>
+          </article>
+          <article class="mini-stat">
+            <span class="stat-label">Confidence low</span>
+            <strong id="low-confidence-count">0</strong>
+          </article>
+          <article class="mini-stat">
+            <span class="stat-label">Testul curent</span>
+            <strong id="session-size-count">400</strong>
+          </article>
+        </div>
+        <p id="review-summary-text" class="summary-note">Intrebarile sensibile vor aparea aici imediat ce incepi sa raspunzi.</p>
+      </section>
+
+      <section class="card dashboard-weakness">
+        <div class="section-head dashboard-head">
+          <div>
+            <h2>Materii in care pierzi puncte</h2>
+            <p class="section-copy">Aici se vede cel mai clar unde merita sa insisti.</p>
+          </div>
+          <span class="pill muted">Auto-analiza</span>
+        </div>
+        <div id="weak-subjects" class="list-stack"></div>
       </section>
     </main>
   </div>
