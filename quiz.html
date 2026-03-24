@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz | Avocatura Trainer</title>
+  <meta name="theme-color" content="#2457f5">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Avocatura">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body data-page="quiz">
+  <div class="app-shell">
+    <header class="page-header">
+      <a class="back-link" href="index.html">Dashboard</a>
+      <div>
+        <p class="eyebrow">Quiz activ</p>
+        <h1>Intrebarea curenta</h1>
+      </div>
+      <span id="quiz-progress" class="pill">1 / 3</span>
+    </header>
+
+    <main class="quiz-layout">
+      <section class="card question-card">
+        <div class="meta-row">
+          <span id="question-subject" class="pill muted">Drept penal</span>
+          <span id="question-source" class="pill muted">Document 2026</span>
+        </div>
+        <h2 id="question-text">Se incarca intrebarea...</h2>
+        <p id="question-details" class="support-text"></p>
+
+        <form id="quiz-form" class="options-list">
+          <label class="option-card">
+            <input type="radio" name="answer" value="A">
+            <span><strong>A.</strong> <span id="option-a"></span></span>
+          </label>
+          <label class="option-card">
+            <input type="radio" name="answer" value="B">
+            <span><strong>B.</strong> <span id="option-b"></span></span>
+          </label>
+          <label class="option-card">
+            <input type="radio" name="answer" value="C">
+            <span><strong>C.</strong> <span id="option-c"></span></span>
+          </label>
+        </form>
+
+        <div class="button-row">
+          <button id="submit-answer" class="action-button primary" type="button">Raspunde</button>
+          <button id="mark-review" class="action-button" type="button">Marcare revizie</button>
+        </div>
+
+        <div class="notes-block">
+          <label for="question-note">Adauga nota</label>
+          <textarea id="question-note" rows="4" placeholder="Scrie aici observatiile tale..."></textarea>
+          <button id="save-note" class="action-button" type="button">Salveaza nota</button>
+        </div>
+
+        <div id="feedback-panel" class="feedback-panel hidden"></div>
+      </section>
+    </main>
+  </div>
+
+  <script src="pwa.js"></script>
+  <script src="questions-data.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
