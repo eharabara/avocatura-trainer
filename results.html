@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rezultate | Avocatura Trainer</title>
+  <meta name="theme-color" content="#2457f5">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Avocatura">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body data-page="results">
+  <div class="app-shell">
+    <header class="page-header">
+      <a class="back-link" href="index.html">Dashboard</a>
+      <div>
+        <p class="eyebrow">Rezultate</p>
+        <h1>Scor si intrebari gresite</h1>
+      </div>
+      <a id="results-next-action" class="action-button" href="quiz.html?reset=1">Reia quiz</a>
+    </header>
+
+    <main class="grid single-column">
+      <section class="card">
+        <div class="section-head">
+          <h2>Scor total</h2>
+          <span id="results-score" class="pill">0 / 3</span>
+        </div>
+        <div class="stat-grid">
+          <article class="stat-card">
+            <span class="stat-label">Corecte</span>
+            <strong id="results-correct">0</strong>
+          </article>
+          <article class="stat-card">
+            <span class="stat-label">Gresite</span>
+            <strong id="results-wrong">0</strong>
+          </article>
+          <article class="stat-card">
+            <span class="stat-label">Precizie</span>
+            <strong id="results-accuracy">0%</strong>
+          </article>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="section-head">
+          <h2>Intrebari gresite</h2>
+        </div>
+        <div id="wrong-questions" class="list-stack"></div>
+      </section>
+    </main>
+  </div>
+
+  <script src="pwa.js"></script>
+  <script src="questions-data.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

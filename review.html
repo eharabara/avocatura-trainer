@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Review | Avocatura Trainer</title>
+  <meta name="theme-color" content="#2457f5">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Avocatura">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body data-page="review">
+  <div class="app-shell">
+    <header class="page-header">
+      <a class="back-link" href="index.html">Dashboard</a>
+      <div>
+        <p class="eyebrow">Revizie</p>
+        <h1>Intrebari prioritare</h1>
+      </div>
+      <a class="action-button" href="quiz.html">Continua quiz</a>
+    </header>
+
+    <main class="grid single-column">
+      <section class="card">
+        <div class="section-head">
+          <h2>Marcate sau confidence low</h2>
+          <span id="review-count" class="pill">0</span>
+        </div>
+        <div id="review-list" class="list-stack"></div>
+      </section>
+    </main>
+  </div>
+
+  <script src="pwa.js"></script>
+  <script src="questions-data.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

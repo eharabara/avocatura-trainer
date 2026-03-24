@@ -1,0 +1,26 @@
+{
+  "name": "Avocatura Trainer",
+  "short_name": "Avocatura",
+  "description": "Antrenament examen avocatura 2026, cu teste randomizate, review si progres local.",
+  "lang": "ro",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#eef3ff",
+  "theme_color": "#2457f5",
+  "icons": [
+    {
+      "src": "./icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

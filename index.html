@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Avocatura Trainer</title>
+  <meta name="theme-color" content="#2457f5">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Avocatura">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body data-page="dashboard">
+  <div class="app-shell">
+    <header class="hero-card">
+      <div class="hero-copy">
+        <p class="eyebrow">Antrenament Examen 2026</p>
+        <h1>Avocatura Trainer</h1>
+        <p class="hero-text">Exerseaza local, urmareste progresul si revizuieste intrebarile care mai au nevoie de atentie.</p>
+      </div>
+      <div class="hero-badge">
+        <span>Offline Ready</span>
+      </div>
+    </header>
+
+    <div class="install-strip">
+      <button id="install-app" class="action-button install-button" type="button" hidden>Instaleaza aplicatia</button>
+      <p class="install-text">Pentru instalare ca PWA, deschide aplicatia printr-un link web sau `localhost`, nu direct din fisier.</p>
+    </div>
+
+    <main class="grid">
+      <section class="card nav-card">
+        <div class="section-head">
+          <h2>Navigare rapida</h2>
+        </div>
+        <div class="action-grid">
+          <a class="action-button primary" href="quiz.html?reset=1">Incepe quiz</a>
+          <a class="action-button" href="review.html">Vezi review</a>
+          <a class="action-button" href="results.html">Rezultate</a>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="section-head">
+          <h2>Progres general</h2>
+          <span id="progress-badge" class="pill">0%</span>
+        </div>
+        <div class="stat-grid">
+          <article class="stat-card">
+            <span class="stat-label">Intrebari vazute</span>
+            <strong id="seen-count">0</strong>
+          </article>
+          <article class="stat-card">
+            <span class="stat-label">Raspunsuri corecte</span>
+            <strong id="correct-count">0</strong>
+          </article>
+          <article class="stat-card">
+            <span class="stat-label">Rata succes</span>
+            <strong id="accuracy-count">0%</strong>
+          </article>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="section-head">
+          <h2>Materii slabe</h2>
+          <span class="pill muted">Auto-analiza</span>
+        </div>
+        <div id="weak-subjects" class="list-stack"></div>
+      </section>
+
+      <section class="card">
+        <div class="section-head">
+          <h2>Revizie recomandata</h2>
+        </div>
+        <div class="stat-grid">
+          <article class="stat-card">
+            <span class="stat-label">Marcate manual</span>
+            <strong id="marked-count">0</strong>
+          </article>
+          <article class="stat-card">
+            <span class="stat-label">Confidence low</span>
+            <strong id="low-confidence-count">0</strong>
+          </article>
+          <article class="stat-card">
+            <span class="stat-label">Gresite ultima sesiune</span>
+            <strong id="wrong-session-count">0</strong>
+          </article>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="pwa.js"></script>
+  <script src="questions-data.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
