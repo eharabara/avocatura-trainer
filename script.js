@@ -279,7 +279,7 @@ function renderDashboard(state) {
   document.getElementById("progress-badge").textContent = `${progress}%`;
   document.getElementById("marked-count").textContent = markedCount;
   document.getElementById("low-confidence-count").textContent = lowConfidenceCount;
-  document.getElementById("wrong-session-count").textContent = state.quiz.wrongQuestionIds.length;
+  document.getElementById("wrong-session-count").textContent = totalWrong;
   document.getElementById("session-size-count").textContent = sessionSize;
 
   const focusTitle = document.getElementById("focus-title");
