@@ -460,11 +460,9 @@ function handleAnswerSubmission(state, question) {
   } else {
     feedbackPanel.className = `feedback-panel ${isCorrect ? "correct" : "wrong"}`;
     if (isCorrect) {
+      feedbackPanel.className = "feedback-panel feedback-panel-inline";
       selectedCard?.classList.add("option-correct");
       feedbackPanel.innerHTML = `
-        <strong>Raspuns corect.</strong>
-        <p>${question.explanation}</p>
-        <p><strong>Sursa:</strong> ${question.legal_basis}</p>
         <button id="confirm-next" class="action-button primary feedback-action" type="button">Continua</button>
       `;
       document.getElementById("confirm-next").onclick = () => goToNextQuestion(state);

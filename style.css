@@ -571,21 +571,24 @@ textarea {
   box-shadow: 0 10px 22px rgba(47, 109, 246, 0.1);
 }
 
-.option-card.option-correct {
+.option-card.option-correct,
+.option-card.option-correct:has(input:checked) {
   border-color: rgba(34, 94, 46, 0.7);
   background: linear-gradient(135deg, rgba(34, 94, 46, 0.92), rgba(46, 125, 50, 0.88));
   box-shadow: 0 12px 24px rgba(34, 94, 46, 0.18);
   color: #fff;
 }
 
-.option-card.option-wrong {
+.option-card.option-wrong,
+.option-card.option-wrong:has(input:checked) {
   border-color: rgba(176, 33, 45, 0.72);
   background: linear-gradient(135deg, rgba(176, 33, 45, 0.9), rgba(207, 53, 68, 0.86));
   box-shadow: 0 12px 24px rgba(176, 33, 45, 0.16);
   color: #fff;
 }
 
-.option-card.option-right-answer {
+.option-card.option-right-answer,
+.option-card.option-right-answer:has(input:checked) {
   border-color: rgba(34, 94, 46, 0.7);
   background: linear-gradient(135deg, rgba(34, 94, 46, 0.92), rgba(46, 125, 50, 0.88));
   box-shadow: 0 12px 24px rgba(34, 94, 46, 0.18);
@@ -674,8 +677,20 @@ input:focus-visible {
   background: linear-gradient(135deg, rgba(239, 91, 119, 0.1), rgba(255, 255, 255, 0.96));
 }
 
+.feedback-panel-inline {
+  margin-top: 18px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
 .feedback-action {
   margin-top: 12px;
+}
+
+.feedback-panel-inline .feedback-action {
+  margin-top: 0;
 }
 
 .app-shell-quiz {
@@ -704,13 +719,6 @@ input:focus-visible {
   margin: 6px 0 0;
   color: var(--muted);
   font-size: 0.95rem;
-}
-
-.quiz-helper {
-  margin: 18px 0 0;
-  color: var(--muted);
-  font-size: 0.92rem;
-  text-align: left;
 }
 
 .quiz-question-shell {
