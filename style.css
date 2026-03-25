@@ -586,22 +586,18 @@ textarea {
 }
 
 .option-card.option-right-answer {
-  border-color: rgba(34, 94, 46, 0.52);
-  background: linear-gradient(135deg, rgba(215, 240, 219, 0.94), rgba(245, 252, 246, 0.96));
-  box-shadow: 0 10px 22px rgba(34, 94, 46, 0.08);
-}
-
-.option-card.option-correct .option-key,
-.option-card.option-wrong .option-key {
-  border-color: rgba(255, 255, 255, 0.48);
-  background: rgba(255, 255, 255, 0.16);
+  border-color: rgba(34, 94, 46, 0.7);
+  background: linear-gradient(135deg, rgba(34, 94, 46, 0.92), rgba(46, 125, 50, 0.88));
+  box-shadow: 0 12px 24px rgba(34, 94, 46, 0.18);
   color: #fff;
 }
 
+.option-card.option-correct .option-key,
+.option-card.option-wrong .option-key,
 .option-card.option-right-answer .option-key {
-  border-color: rgba(34, 94, 46, 0.34);
-  background: rgba(255, 255, 255, 0.82);
-  color: var(--text);
+  border-color: rgba(255, 255, 255, 0.48);
+  background: rgba(255, 255, 255, 0.16);
+  color: #fff;
 }
 
 .option-card input {
@@ -769,12 +765,6 @@ input:focus-visible {
   margin: 14px 0 0;
   max-width: 58ch;
   font-size: 1rem;
-}
-
-.quiz-actions {
-  justify-content: flex-start;
-  gap: 12px;
-  flex-wrap: wrap;
 }
 
 .question-card .action-button.primary {

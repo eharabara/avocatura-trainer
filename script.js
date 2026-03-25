@@ -397,8 +397,6 @@ function renderQuiz(state) {
       correctCard?.classList.add("option-right-answer");
     }
   }
-
-  document.getElementById("mark-review").onclick = () => toggleReviewFlag(state, question.question_id);
 }
 
 function handleAnswerSubmission(state, question) {
@@ -475,7 +473,6 @@ function handleAnswerSubmission(state, question) {
       correctCard?.classList.add("option-right-answer");
       feedbackPanel.innerHTML = `
         <strong>Raspuns gresit.</strong>
-        <p><strong>Raspunsul corect este ${question.correct_option_source}.</strong> ${getOptionText(question, question.correct_option_source)}</p>
         <p>${question.explanation}</p>
         <p><strong>Sursa:</strong> ${question.legal_basis}</p>
         <button id="confirm-next" class="action-button primary feedback-action" type="button">Am inteles, continua</button>
@@ -592,13 +589,21 @@ function init() {
   const state = loadState();
   const currentPage = document.body.dataset.page;
   const params = new URLSearchParams(window.location.search);
+  let shouldCleanQuizUrl = false;
 
   if (currentPage === "quiz" && params.get("reset") === "1") {
     resetQuizSessionWithSize(state, Number(params.get("size")) || TEST_SIZE);
+    shouldCleanQuizUrl = true;
   }
 
   if (currentPage === "quiz" && params.get("retry") === "1") {
     resetRetrySession(state);
+    shouldCleanQuizUrl = true;
+  }
+
+  if (currentPage === "quiz" && shouldCleanQuizUrl) {
+    const cleanUrl = `${window.location.pathname}${window.location.hash}`;
+    window.history.replaceState({}, document.title, cleanUrl);
   }
 
   if (currentPage === "dashboard") {
