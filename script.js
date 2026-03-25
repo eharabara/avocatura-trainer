@@ -272,6 +272,8 @@ function renderDashboard(state) {
   const markedCount = questions.filter((question) => question.marked_for_review).length;
   const lowConfidenceCount = questions.filter((question) => question.confidence_level === "low").length;
   const sessionSize = state.quiz.questionIds.length || TEST_SIZE;
+  const answeredCount = Object.keys(state.quiz.answers || {}).length;
+  const hasInProgressQuiz = !state.quiz.completed && answeredCount > 0 && state.quiz.currentIndex < state.quiz.questionIds.length;
 
   document.getElementById("seen-count").textContent = totalSeen;
   document.getElementById("correct-count").textContent = totalCorrect;
@@ -287,6 +289,15 @@ function renderDashboard(state) {
   const focusProgressBar = document.getElementById("focus-progress-bar");
   const focusProgressText = document.getElementById("focus-progress-text");
   const reviewSummaryText = document.getElementById("review-summary-text");
+  const continueQuizButton = document.getElementById("continue-quiz-button");
+
+  if (continueQuizButton) {
+    continueQuizButton.classList.toggle("hidden", !hasInProgressQuiz);
+    continueQuizButton.href = "quiz.html";
+    continueQuizButton.textContent = hasInProgressQuiz
+      ? `Continua testul (${answeredCount}/${state.quiz.questionIds.length})`
+      : "Continua testul";
+  }
 
   if (state.quiz.wrongQuestionIds.length > 0) {
     focusTitle.textContent = "Ai intrebari gresite pregatite pentru reluare";
@@ -467,12 +478,10 @@ function handleAnswerSubmission(state, question) {
       `;
       document.getElementById("confirm-next").onclick = () => goToNextQuestion(state);
     } else {
+      feedbackPanel.className = "feedback-panel feedback-panel-inline";
       selectedCard?.classList.add("option-wrong");
       correctCard?.classList.add("option-right-answer");
       feedbackPanel.innerHTML = `
-        <strong>Raspuns gresit.</strong>
-        <p>${question.explanation}</p>
-        <p><strong>Sursa:</strong> ${question.legal_basis}</p>
         <button id="confirm-next" class="action-button primary feedback-action" type="button">Am inteles, continua</button>
       `;
       document.getElementById("confirm-next").onclick = () => goToNextQuestion(state);
