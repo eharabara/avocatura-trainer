@@ -227,6 +227,40 @@ function getCurrentSessionQuestions(state) {
   return state.quiz.questionIds.map((questionId) => questionsById.get(questionId)).filter(Boolean);
 }
 
+function getQuizSessionStats(state) {
+  let errors = 0;
+  let correctStreak = 0;
+
+  state.quiz.questionIds.forEach((questionId) => {
+    const answer = state.quiz.answers?.[questionId];
+    if (!answer || answer.isScorable !== true) {
+      return;
+    }
+
+    if (answer.isCorrect) {
+      correctStreak += 1;
+    } else {
+      errors += 1;
+      correctStreak = 0;
+    }
+  });
+
+  return { errors, correctStreak };
+}
+
+function updateQuizSessionStats(state) {
+  const errorsCount = document.getElementById("quiz-errors-count");
+  const streakCount = document.getElementById("quiz-streak-count");
+
+  if (!errorsCount || !streakCount) {
+    return;
+  }
+
+  const { errors, correctStreak } = getQuizSessionStats(state);
+  errorsCount.textContent = errors;
+  streakCount.textContent = correctStreak;
+}
+
 function goToNextQuestion(state) {
   const isLastQuestion = state.quiz.currentIndex >= state.quiz.questionIds.length - 1;
 
@@ -371,12 +405,13 @@ function renderQuiz(state) {
     const progressPercent = totalQuestions === 0 ? 0 : Math.round(((currentIndex + 1) / totalQuestions) * 100);
     quizProgressBar.style.width = `${Math.max(progressPercent, 4)}%`;
   }
+  updateQuizSessionStats(state);
   feedbackPanel.className = "feedback-panel hidden";
   feedbackPanel.innerHTML = "";
 
   const savedAnswer = state.quiz.answers[question.question_id];
   document.querySelectorAll(".option-card").forEach((card) => {
-    card.classList.remove("option-correct", "option-wrong", "option-right-answer");
+    card.classList.remove("option-correct", "option-wrong", "option-right-answer", "option-manual");
   });
 
   document.querySelectorAll('input[name="answer"]').forEach((input) => {
@@ -403,10 +438,28 @@ function renderQuiz(state) {
 
     if (savedAnswer.isCorrect) {
       selectedCard?.classList.add("option-correct");
+      feedbackPanel.className = "feedback-panel feedback-panel-inline";
+      feedbackPanel.innerHTML = `
+        <button id="confirm-next" class="action-button primary feedback-action" type="button">Continua</button>
+      `;
     } else {
       selectedCard?.classList.add("option-wrong");
       correctCard?.classList.add("option-right-answer");
+      feedbackPanel.className = "feedback-panel feedback-panel-inline";
+      feedbackPanel.innerHTML = `
+        <button id="confirm-next" class="action-button primary feedback-action" type="button">Am inteles, continua</button>
+      `;
     }
+
+    document.getElementById("confirm-next").onclick = () => goToNextQuestion(state);
+  } else if (savedAnswer && savedAnswer.isScorable === false) {
+    const selectedCard = document.querySelector(`input[name="answer"][value="${savedAnswer.selectedOption}"]`)?.closest(".option-card");
+    selectedCard?.classList.add("option-manual");
+    feedbackPanel.className = "feedback-panel feedback-panel-inline";
+    feedbackPanel.innerHTML = `
+      <button id="confirm-next" class="action-button primary feedback-action" type="button">Am inteles, continua</button>
+    `;
+    document.getElementById("confirm-next").onclick = () => goToNextQuestion(state);
   }
 }
 
@@ -455,16 +508,15 @@ function handleAnswerSubmission(state, question) {
   questionRef.mastery_score = calculateMastery(questionRef);
   state.quiz.score = Object.values(state.quiz.answers).filter((answer) => answer.isCorrect === true).length;
   saveState(state);
+  updateQuizSessionStats(state);
   document.querySelectorAll('input[name="answer"]').forEach((input) => {
     input.disabled = true;
   });
 
   if (!isScorable) {
-    feedbackPanel.className = "feedback-panel";
+    selectedCard?.classList.add("option-manual");
+    feedbackPanel.className = "feedback-panel feedback-panel-inline";
     feedbackPanel.innerHTML = `
-      <strong>Raspuns salvat, dar intrebarea nu poate fi punctata automat.</strong>
-      <p>${question.explanation}</p>
-      <p><strong>Sursa:</strong> ${question.legal_basis}</p>
       <button id="confirm-next" class="action-button primary feedback-action" type="button">Am inteles, continua</button>
     `;
     document.getElementById("confirm-next").onclick = () => goToNextQuestion(state);

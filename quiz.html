@@ -25,6 +25,16 @@
     <main class="quiz-layout">
       <section class="question-card">
         <div class="quiz-question-shell">
+          <div class="quiz-session-stats" aria-label="Indicatori sesiune">
+            <div class="quiz-session-stat-head">
+              <span class="quiz-session-stat-label">Erori</span>
+              <strong id="quiz-errors-count" class="quiz-session-stat-value">0</strong>
+            </div>
+            <div class="quiz-session-stat-head">
+              <span class="quiz-session-stat-label">Corecte succesive</span>
+              <strong id="quiz-streak-count" class="quiz-session-stat-value">0</strong>
+            </div>
+          </div>
           <div class="quiz-progress-block" aria-label="Progres quiz">
             <div class="quiz-progress-head">
               <span class="quiz-progress-label">Progres sesiune</span>

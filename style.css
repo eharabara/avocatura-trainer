@@ -531,17 +531,17 @@ textarea {
 .question-card h1 {
   margin: 0;
   font-family: var(--font-display);
-  font-size: clamp(2rem, 3.8vw, 3.15rem);
+  font-size: clamp(1.85rem, 3.2vw, 2.65rem);
   font-weight: 700;
-  line-height: 1.08;
+  line-height: 1.04;
   letter-spacing: -0.04em;
-  max-width: 18ch;
+  max-width: 17ch;
 }
 
 .options-list {
   display: grid;
-  gap: 10px;
-  margin: 30px 0 28px;
+  gap: 8px;
+  margin: 18px 0 14px;
 }
 
 .option-card {
@@ -549,7 +549,7 @@ textarea {
   gap: 12px;
   align-items: center;
   width: min(100%, 440px);
-  padding: 10px 12px;
+  padding: 9px 12px;
   border-radius: 8px;
   border: 1px solid rgba(39, 33, 32, 0.24);
   background: rgba(255, 255, 255, 0.34);
@@ -595,9 +595,18 @@ textarea {
   color: #fff;
 }
 
+.option-card.option-manual,
+.option-card.option-manual:has(input:checked) {
+  border-color: rgba(166, 117, 31, 0.65);
+  background: linear-gradient(135deg, rgba(173, 125, 40, 0.9), rgba(194, 152, 74, 0.84));
+  box-shadow: 0 12px 24px rgba(166, 117, 31, 0.14);
+  color: #fff;
+}
+
 .option-card.option-correct .option-key,
 .option-card.option-wrong .option-key,
-.option-card.option-right-answer .option-key {
+.option-card.option-right-answer .option-key,
+.option-card.option-manual .option-key {
   border-color: rgba(255, 255, 255, 0.48);
   background: rgba(255, 255, 255, 0.16);
   color: #fff;
@@ -695,8 +704,8 @@ input:focus-visible {
 
 .app-shell-quiz {
   width: min(100%, 1120px);
-  padding-top: 26px;
-  padding-bottom: 72px;
+  padding-top: 14px;
+  padding-bottom: 24px;
 }
 
 .quiz-header {
@@ -704,7 +713,7 @@ input:focus-visible {
   align-items: center;
   justify-content: space-between;
   gap: 18px;
-  margin-bottom: 34px;
+  margin-bottom: 14px;
   padding: 0;
   background: transparent;
   border: 0;
@@ -716,19 +725,48 @@ input:focus-visible {
 }
 
 .quiz-header-note {
-  margin: 6px 0 0;
+  margin: 2px 0 0;
   color: var(--muted);
-  font-size: 0.95rem;
+  font-size: 0.88rem;
 }
 
 .quiz-question-shell {
   max-width: 760px;
-  padding: 8px 0 0 38px;
+  padding: 0 0 0 20px;
+}
+
+.quiz-session-stats {
+  display: grid;
+  gap: 4px;
+  width: min(100%, 440px);
+  margin-bottom: 8px;
+}
+
+.quiz-session-stat-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.quiz-session-stat-label {
+  color: var(--muted);
+  font-size: 0.88rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.quiz-session-stat-value {
+  color: var(--accent-strong);
+  font-size: 0.96rem;
+  font-weight: 800;
+  line-height: 1.1;
 }
 
 .quiz-progress-block {
   width: min(100%, 440px);
-  margin-bottom: 26px;
+  margin-bottom: 14px;
 }
 
 .quiz-progress-head {
@@ -736,7 +774,7 @@ input:focus-visible {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  margin-bottom: 10px;
+  margin-bottom: 6px;
 }
 
 .quiz-progress-label {
@@ -755,7 +793,7 @@ input:focus-visible {
 
 .quiz-progress-track {
   width: 100%;
-  height: 10px;
+  height: 8px;
   border-radius: 999px;
   background: rgba(39, 33, 32, 0.08);
   overflow: hidden;
@@ -770,9 +808,9 @@ input:focus-visible {
 }
 
 .quiz-details {
-  margin: 14px 0 0;
+  margin: 8px 0 0;
   max-width: 58ch;
-  font-size: 1rem;
+  font-size: 0.95rem;
 }
 
 .question-card .action-button.primary {
@@ -870,24 +908,80 @@ input:focus-visible {
 
   .quiz-header {
     align-items: flex-start;
-    margin-bottom: 24px;
+    margin-bottom: 10px;
   }
 
   .quiz-header-copy {
     text-align: left;
   }
 
+  .quiz-header-note {
+    display: none;
+  }
+
   .question-card {
-    padding-top: 8px;
+    padding-top: 0;
   }
 
   .question-card h1 {
-    font-size: 1.95rem;
+    font-size: 1.55rem;
+    line-height: 1.05;
     max-width: none;
   }
 
   .quiz-question-shell {
     padding-left: 0;
+  }
+
+  .quiz-progress-block,
+  .quiz-session-stats {
+    width: 100%;
+  }
+
+  .quiz-session-stat-label,
+  .quiz-progress-label {
+    font-size: 0.78rem;
+  }
+
+  .quiz-session-stat-value,
+  .quiz-progress-value {
+    font-size: 0.9rem;
+  }
+
+  .quiz-details {
+    margin-top: 6px;
+    font-size: 0.9rem;
+  }
+
+  .options-list {
+    gap: 8px;
+    margin: 14px 0 12px;
+  }
+
+  .option-card {
+    padding: 8px 10px;
+  }
+
+  .option-content {
+    grid-template-columns: 24px 1fr;
+    gap: 10px;
+    font-size: 0.95rem;
+    line-height: 1.3;
+  }
+
+  .option-key {
+    width: 24px;
+    height: 24px;
+    font-size: 0.8rem;
+  }
+
+  .feedback-panel {
+    margin-top: 10px;
+  }
+
+  .feedback-action {
+    min-height: 44px;
+    padding: 10px 16px;
   }
 
   .option-card,
